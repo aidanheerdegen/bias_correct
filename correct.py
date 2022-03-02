@@ -1,25 +1,13 @@
-import sys
-from numpy import array
+import argparse
+from calendar import month_abbr
+from datetime import date, datetime
+import os
+import psutil
+
 import numpy as np
-import scipy.stats as sc
-import statsmodels.tsa.stattools as stt
 import xarray as xr
-import pandas as pd
 
 import SBCK as bc
-import SBCK.tools as bct
-import SBCK.metrics as bcm
-import SBCK.datasets as bcd
-
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-from datetime import date
-import os, psutil
-from datetime import datetime
-
-from calendar import month_abbr
-
-import argparse
 
 # Lookup table from method name to method description
 method_lookup = {
@@ -181,14 +169,14 @@ def Bias_Correction(model, method, method_long, month, month_name):
             else:
 
                 ### Combine variables to matrix with 3 columns and ntime rows
-                OBS = array([temp_obs_values[:,i,j],prec_obs_values[:,i,j],
-                             insol_obs_values[:,i,j]]).transpose()
-                HIST = array([temp_sim_HIST_values[:,i,j],
-                              prec_sim_HIST_values[:,i,j],
-                              insol_sim_HIST_values[:,i,j]]).transpose()
-                COR = array([temp_sim_COR_values[:,i,j],
-                             prec_sim_COR_values[:,i,j],
-                             insol_sim_COR_values[:,i,j]]).transpose()
+                OBS = np.array([temp_obs_values[:,i,j],prec_obs_values[:,i,j],
+                                insol_obs_values[:,i,j]]).transpose()
+                HIST = np.array([temp_sim_HIST_values[:,i,j],
+                                prec_sim_HIST_values[:,i,j],
+                                insol_sim_HIST_values[:,i,j]]).transpose()
+                COR = np.array([temp_sim_COR_values[:,i,j],
+                                prec_sim_COR_values[:,i,j],
+                                insol_sim_COR_values[:,i,j]]).transpose()
                 try:
                     if method == 'OTC_biv':
                         otc = bc.OTC()
@@ -202,11 +190,11 @@ def Bias_Correction(model, method, method_long, month, month_name):
                         COR_BC, HIST_BC = dotc.predict(COR, HIST)
 
                     elif method == 'ECBC':
-                    	irefs = [0]
+                        irefs = [0]
 
-                    	ecbc = bc.ECBC()
-                    	ecbc.fit(OBS, HIST, COR)
-                    	COR_BC, HIST_BC = ecbc.predict(COR, HIST)
+                        ecbc = bc.ECBC()
+                        ecbc.fit(OBS, HIST, COR)
+                        COR_BC, HIST_BC = ecbc.predict(COR, HIST)
 
                     elif method == 'QMrs':
                         irefs = [0]
@@ -251,7 +239,7 @@ def Bias_Correction(model, method, method_long, month, month_name):
                         tsmbc.fit(OBS, HIST, COR)
                         COR_BC, HIST_BC = tsmbc.predict(COR, HIST)
 
-                except(np.linalg.LinAlgError):
+                except np.linalg.LinAlgError:
                     print('fail')
                     temp_bc_HIST[:,i,j] = np.nan
                     prec_bc_HIST[:,i,j] = np.nan
@@ -288,7 +276,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--experiment', choices=experiments, required=True)
-    parser.add_argument('--method', choices=method_lookup.keys() required=True)
+    parser.add_argument('--method', choices=method_lookup.keys(), required=True)
     parser.add_argument('--month_num', type=int, required=True)
 
     args = parser.parse_args()
@@ -301,7 +289,7 @@ if __name__ == "__main__":
     date_created = date.today()
 
     for m, mn in zip(months, month_names):
-        Bias_Correction(args.experiment
+        Bias_Correction(args.experiment,
                         args.method,
                         method_lookup[args.method],
                         m,
