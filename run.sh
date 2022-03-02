@@ -28,4 +28,7 @@ declare -a methods=(
     'CDFt'
     )
 
-parallel echo python correct.py --experiment {1} --method {2} --month_num {3} ::: "${experiments[@]}" ::: "${methods[@]}" ::: {1..12}
+parallel -v python correct.py --experiment {1} --method {2} --month_num {3} \
+                              ::: "${experiments[@]}" \
+                              ::: "${methods[@]}" \
+                              ::: {1..12}
