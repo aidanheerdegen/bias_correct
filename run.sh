@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 #PBS -P w97
-#PBS -l walltime=24:00:00
-#PBS -l mem=72GB
+#PBS -l walltime=48:00:00
+#PBS -l mem=256GB
 #PBS -q normalbw
-#PBS -l ncpus=8
+#PBS -l ncpus=28
 #PBS -l wd
 #PBS -l storage=gdata/w97+gdata/hh5
 #PBS -M l.teckentrup@student.unsw.edu.au
